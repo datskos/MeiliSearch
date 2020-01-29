@@ -35,9 +35,9 @@ pub fn apply_settings_update(
     let mut schema = match index.main.schema(writer)? {
         Some(schema) => schema,
         None => {
-            match settings.attribute_identifier.clone() {
+            match settings.identifier.clone() {
                 UpdateState::Update(id) => Schema::with_identifier(id),
-                _ => return Err(Error::MissingSchemaIdentifier)
+                _ => return Err(Error::MissingIdentifier)
             }
         }
     };
@@ -70,15 +70,15 @@ pub fn apply_settings_update(
 
     match settings.index_new_fields {
         UpdateState::Update(v) => {
-            schema.set_must_index_new_fields(v);
+            schema.set_index_new_fields(v);
         },
         UpdateState::Clear => {
-            schema.set_must_index_new_fields(true);
+            schema.set_index_new_fields(true);
         },
         _ => (),
     }
 
-    match settings.attributes_searchable.clone() {
+    match settings.searchable_attributes.clone() {
         UpdateState::Update(v) => {
             schema.update_indexed(v)?;
             must_reindex = true;
@@ -102,7 +102,7 @@ pub fn apply_settings_update(
             must_reindex = true;
         }
     };
-    match settings.attributes_displayed.clone() {
+    match settings.displayed_attributes.clone() {
         UpdateState::Update(v) => schema.update_displayed(v)?,
         UpdateState::Clear => {
             let clear: Vec<String> = Vec::new();
@@ -121,7 +121,7 @@ pub fn apply_settings_update(
         }
     };
 
-    match settings.attribute_identifier.clone() {
+    match settings.identifier.clone() {
         UpdateState::Update(v) => {
             schema.set_identifier(v)?;
             index.main.put_schema(writer, &schema)?;
@@ -168,7 +168,7 @@ pub fn apply_settings_update(
             docs_words_store,
         )?;
     }
-    if let UpdateState::Clear = settings.attribute_identifier {
+    if let UpdateState::Clear = settings.identifier {
         index.main.delete_schema(writer)?;
     }
     Ok(())

@@ -216,7 +216,7 @@ pub fn apply_documents_partial_addition<'a, 'b>(
             reader: writer,
             documents_fields: documents_fields_store,
             schema: &schema,
-            attributes: None,
+            fields: None,
         };
 
         // retrieve the old document and

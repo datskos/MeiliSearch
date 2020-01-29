@@ -42,12 +42,12 @@ impl FieldsMap {
         self.name_map.remove(&name);
     }
 
-    pub fn get_id<S: Into<String>>(&self, name: S) -> Option<FieldId> {
+    pub fn id<S: Into<String>>(&self, name: S) -> Option<FieldId> {
         let name = name.into();
         self.name_map.get(&name).map(|s| *s)
     }
 
-    pub fn get_name<I: Into<FieldId>>(&self, id: I) -> Option<String> {
+    pub fn name<I: Into<FieldId>>(&self, id: I) -> Option<String> {
         self.id_map.get(&id.into()).map(|s| s.to_string())
     }
 
@@ -73,17 +73,17 @@ mod tests {
         assert_eq!(fields_map.insert("id").unwrap(), 0.into());
         assert_eq!(fields_map.insert("title").unwrap(), 1.into());
         assert_eq!(fields_map.insert("descritpion").unwrap(), 2.into());
-        assert_eq!(fields_map.get_id("id"), Some(0.into()));
-        assert_eq!(fields_map.get_id("title"), Some(1.into()));
-        assert_eq!(fields_map.get_id("descritpion"), Some(2.into()));
-        assert_eq!(fields_map.get_id("date"), None);
+        assert_eq!(fields_map.id("id"), Some(0.into()));
+        assert_eq!(fields_map.id("title"), Some(1.into()));
+        assert_eq!(fields_map.id("descritpion"), Some(2.into()));
+        assert_eq!(fields_map.id("date"), None);
         assert_eq!(fields_map.len(), 3);
-        assert_eq!(fields_map.get_name(0), Some("id".to_owned()));
-        assert_eq!(fields_map.get_name(1), Some("title".to_owned()));
-        assert_eq!(fields_map.get_name(2), Some("descritpion".to_owned()));
-        assert_eq!(fields_map.get_name(4), None);
+        assert_eq!(fields_map.name(0), Some("id".to_owned()));
+        assert_eq!(fields_map.name(1), Some("title".to_owned()));
+        assert_eq!(fields_map.name(2), Some("descritpion".to_owned()));
+        assert_eq!(fields_map.name(4), None);
         fields_map.remove("title");
-        assert_eq!(fields_map.get_id("title"), None);
+        assert_eq!(fields_map.id("title"), None);
         assert_eq!(fields_map.insert("title").unwrap(), 3.into());
         assert_eq!(fields_map.len(), 3);
     }

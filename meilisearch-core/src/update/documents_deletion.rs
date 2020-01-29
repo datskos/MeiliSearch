@@ -105,7 +105,7 @@ pub fn apply_documents_deletion(
     };
 
     // collect the ranked attributes according to the schema
-    let ranked_attrs = schema.get_ranked();
+    let ranked_attrs = schema.ranked();
 
     let mut words_document_ids = HashMap::new();
     for id in idset {

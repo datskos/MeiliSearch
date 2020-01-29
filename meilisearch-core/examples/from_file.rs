@@ -359,7 +359,7 @@ fn search_command(command: SearchCommand, database: Database) -> Result<(), Box<
                     };
 
                     let attr = schema
-                        .get_id(filter)
+                        .id(filter)
                         .expect("Could not find filtered attribute");
 
                     builder.with_filter(move |document_id| {
@@ -390,7 +390,7 @@ fn search_command(command: SearchCommand, database: Database) -> Result<(), Box<
                             for (name, text) in document.0 {
                                 print!("{}: ", name);
 
-                                let attr = schema.get_id(&name).unwrap();
+                                let attr = schema.id(&name).unwrap();
                                 let highlights = doc
                                     .highlights
                                     .iter()
@@ -410,7 +410,7 @@ fn search_command(command: SearchCommand, database: Database) -> Result<(), Box<
                     let mut matching_attributes = HashSet::new();
                     for highlight in doc.highlights {
                         let attr = FieldId::new(highlight.attribute);
-                        let name = schema.get_name(attr);
+                        let name = schema.name(attr);
                         matching_attributes.insert(name);
                     }
 

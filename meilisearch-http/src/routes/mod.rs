@@ -132,7 +132,7 @@ pub fn load_routes(app: &mut tide::Server<Data>) {
 
                         router
                             .at("/displayed")
-                            .get(|ctx| into_response(setting::get_displayed(ctx)))
+                            .get(|ctx| into_response(setting::displayed(ctx)))
                             .post(|ctx| into_response(setting::update_displayed(ctx)))
                             .delete(|ctx| into_response(setting::delete_displayed(ctx)));
                     });

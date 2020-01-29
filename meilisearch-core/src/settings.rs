@@ -1,15 +1,13 @@
-use std::sync::Mutex;
 use std::collections::{BTreeMap, BTreeSet, HashSet};
 use std::str::FromStr;
 
 use serde::{Deserialize, Deserializer, Serialize};
 use once_cell::sync::Lazy;
 
-static RANKING_RULE_REGEX: Lazy<Mutex<regex::Regex>> = Lazy::new(|| {
+static RANKING_RULE_REGEX: Lazy<regex::Regex> = Lazy::new(|| {
     let regex = regex::Regex::new(r"(asc|dsc)\(([a-zA-Z0-9-_]*)\)").unwrap();
-    Mutex::new(regex)
+    regex
 });
-
 
 #[derive(Default, Clone, Serialize, Deserialize)]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
@@ -19,11 +17,11 @@ pub struct Settings {
     #[serde(default, deserialize_with = "deserialize_some")]
     pub ranking_distinct: Option<Option<String>>,
     #[serde(default, deserialize_with = "deserialize_some")]
-    pub attribute_identifier: Option<Option<String>>,
+    pub identifier: Option<Option<String>>,
     #[serde(default, deserialize_with = "deserialize_some")]
-    pub attributes_searchable: Option<Option<Vec<String>>>,
+    pub searchable_attributes: Option<Option<Vec<String>>>,
     #[serde(default, deserialize_with = "deserialize_some")]
-    pub attributes_displayed: Option<Option<HashSet<String>>>,
+    pub displayed_attributes: Option<Option<HashSet<String>>>,
     #[serde(default, deserialize_with = "deserialize_some")]
     pub stop_words: Option<Option<BTreeSet<String>>>,
     #[serde(default, deserialize_with = "deserialize_some")]
@@ -53,9 +51,9 @@ impl Into<SettingsUpdate> for Settings {
         SettingsUpdate {
             ranking_rules: ranking_rules,
             ranking_distinct: settings.ranking_distinct.into(),
-            attribute_identifier: settings.attribute_identifier.into(),
-            attributes_searchable: settings.attributes_searchable.into(),
-            attributes_displayed: settings.attributes_displayed.into(),
+            identifier: settings.identifier.into(),
+            searchable_attributes: settings.searchable_attributes.into(),
+            displayed_attributes: settings.displayed_attributes.into(),
             stop_words: settings.stop_words.into(),
             synonyms: settings.synonyms.into(),
             index_new_fields: settings.index_new_fields.into(),
@@ -139,7 +137,7 @@ impl FromStr for RankingRule {
             "_words_position" => RankingRule::WordsPosition,
             "_exact" => RankingRule::Exact,
             _ => {
-                let captures = RANKING_RULE_REGEX.lock().unwrap().captures(s).unwrap();
+                let captures = RANKING_RULE_REGEX.captures(s).unwrap();
                 match captures[1].as_ref() {
                     "asc" => RankingRule::Asc(captures[2].to_string()),
                     "dsc" => RankingRule::Dsc(captures[2].to_string()),
@@ -171,9 +169,9 @@ impl RankingRule {
 pub struct SettingsUpdate {
     pub ranking_rules: UpdateState<Vec<RankingRule>>,
     pub ranking_distinct: UpdateState<String>,
-    pub attribute_identifier: UpdateState<String>,
-    pub attributes_searchable: UpdateState<Vec<String>>,
-    pub attributes_displayed: UpdateState<HashSet<String>>,
+    pub identifier: UpdateState<String>,
+    pub searchable_attributes: UpdateState<Vec<String>>,
+    pub displayed_attributes: UpdateState<HashSet<String>>,
     pub stop_words: UpdateState<BTreeSet<String>>,
     pub synonyms: UpdateState<BTreeMap<String, Vec<String>>>,
     pub index_new_fields: UpdateState<bool>,
@@ -184,9 +182,9 @@ impl Default for SettingsUpdate {
         Self {
             ranking_rules: UpdateState::Nothing,
             ranking_distinct: UpdateState::Nothing,
-            attribute_identifier: UpdateState::Nothing,
-            attributes_searchable: UpdateState::Nothing,
-            attributes_displayed: UpdateState::Nothing,
+            identifier: UpdateState::Nothing,
+            searchable_attributes: UpdateState::Nothing,
+            displayed_attributes: UpdateState::Nothing,
             stop_words: UpdateState::Nothing,
             synonyms: UpdateState::Nothing,
             index_new_fields: UpdateState::Nothing,

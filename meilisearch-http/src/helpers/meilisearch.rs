@@ -173,7 +173,7 @@ impl<'a> SearchBuilder<'a> {
                     let ref_index = &self.index;
                     let value = value.trim().to_lowercase();
 
-                    let attr = match schema.get_id(attr) {
+                    let attr = match schema.id(attr) {
                         Some(attr) => attr,
                         None => return Err(Error::UnknownFilteredAttribute),
                     };
@@ -372,7 +372,7 @@ fn crop_document(
     matches.sort_unstable_by_key(|m| (m.char_index, m.char_length));
 
     for (field, length) in fields {
-        let attribute = match schema.get_id(field) {
+        let attribute = match schema.id(field) {
             Some(attribute) => attribute,
             None => continue,
         };
@@ -401,13 +401,13 @@ fn calculate_matches(
 ) -> MatchesInfos {
     let mut matches_result: HashMap<String, Vec<MatchPosition>> = HashMap::new();
     for m in matches.iter() {
-        if let Some(attribute) = schema.get_name(FieldId::new(m.attribute)) {
+        if let Some(attribute) = schema.name(FieldId::new(m.attribute)) {
             if let Some(attributes_to_retrieve) = attributes_to_retrieve.clone() {
                 if !attributes_to_retrieve.contains(attribute.as_str()) {
                     continue;
                 }
             };
-            if !schema.get_displayed_name().contains(attribute.as_str()) {
+            if !schema.displayed_name().contains(attribute.as_str()) {
                 continue;
             }
             if let Some(pos) = matches_result.get_mut(&attribute) {

@@ -95,7 +95,7 @@ pub async fn get_index(ctx: Request<Data>) -> SResult<Response> {
 struct IndexCreateRequest {
     name: Option<String>,
     uid: Option<String>,
-    attribute_identifier: Option<String>,
+    identifier: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -150,7 +150,7 @@ pub async fn create_index(mut ctx: Request<Data>) -> SResult<Response> {
         .updated_at(&writer)?
         .into_internal_error()?;
 
-    if let Some(id) = body.attribute_identifier {
+    if let Some(id) = body.identifier {
         created_index
             .main
             .put_schema(&mut writer, &Schema::with_identifier(id))?;
